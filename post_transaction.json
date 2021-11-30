@@ -1,0 +1,1014 @@
+{
+openapi: 3.0.0
+info:
+  version: "2.0"
+  title: FundingShield Guardian API
+  description: This is the FundingShield Guardian API
+security:
+  - apiKeyHeader: []
+  - apiKeyQuery: []
+paths:
+  /transaction:
+    get:
+      tags:
+        - guardian-external
+      summary: searches Guardian transactions
+      operationId: searchGuardianTransactions
+      description: |
+        Get Guardian transaction details by passing a transactionId
+      parameters:
+        - in: query
+          name: transactionId
+          description: Guardian transactionId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: No error, operation successful.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuardianResponse'
+        '400':
+          description: bad input parameter
+    post:
+      tags:
+        - guardian-external
+      summary: Creates a single Guardian Transaction
+      operationId: createGuardianTransaction
+      description: POST creates a single Guardian Transaction
+      responses:
+        '201':
+          description: Successful creation of a resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuardianResponse'
+        '400':
+          description: bad input parameter
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/GuardianTransaction'
+            encoding:
+              pdfClosingProtectionLetter:
+                contentType: image/pdf
+              pdfWireInstructions:
+                contentType: image/pdf
+              pdfErrorsAndOmissionsInsurance:
+                contentType: image/pdf
+              pdfCrimesPolicy:
+                contentType: image/pdf
+              pdfFidelityBond:
+                contentType: image/pdf
+              pdfBankReferenceLetter:
+                contentType: image/pdf   
+              pdfStateLicense:   
+                contentType: image/pdf   
+              pdfLenderTitleCommitment:
+                contentType: image/pdf
+        description: Guardian Transaction(s) to add
+    patch:
+      tags:
+        - guardian-external
+      summary: updates a single Guardian Transaction
+      operationId: updateGuardianTransaction
+      description: updates a single Guardian Transaction
+      responses:
+        '200':
+          description: No error, operation successful.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuardianResponse'
+        '400':
+          description: bad input parameter
+      parameters:
+        - in: query
+          name: transactionId
+          description: Guardian transactionId
+          required: true
+          schema:
+            type: integer          
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/GuardianTransactionPatch'
+            encoding:
+              pdfClosingProtectionLetter:
+                contentType: image/pdf
+              pdfWireInstructions:
+                contentType: image/pdf
+              pdfErrorsAndOmissionsInsurance:
+                contentType: image/pdf
+              pdfCrimesPolicy:
+                contentType: image/pdf
+              pdfFidelityBond:
+                contentType: image/pdf
+              pdfBankReferenceLetter:
+                contentType: image/pdf   
+              pdfStateLicense:   
+                contentType: image/pdf   
+              pdfLenderTitleCommitment:
+                contentType: image/pdf
+        description: Guardian Transaction to add        
+  /certificate:
+    post:
+      tags:
+        - guardian-external
+      summary: searches Guardian Certificates
+      operationId: searchGuardianCertificates
+      description: |
+        By passing in the appropriate options, you can search for
+        available Guardian Transactions in the system
+      responses:
+        '200':
+          description: No error, operation successful.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GuardianCertificateResponse'
+        '400':
+          description: bad input parameter
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/GuardianCertificateRequest'             
+        description: Paremeters for Guardian Certificate search
+  /transactionDocs:
+    get:
+      tags:
+        - guardian-external    
+      summary: Get Guardian Certified Documents
+      parameters:
+        - in: query
+          name: transactionId
+          description: unique identifier for Guardian Transaction obtained from GET /transaction
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: type
+          description: the type of requested Guardian Certified Document
+          required: true
+          schema:
+            type: string
+            enum: [pdfGuardianCertificate, zipAllGuardianCertifiedDocs]
+      responses:
+        '200':
+          description: Guardian Certified Documents
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary    
+    post:
+      tags:
+        - guardian-external    
+      summary: Upload Guardian Certified Documents
+      parameters:
+        - in: query
+          name: transactionId
+          description: unique identifier for Guardian Transaction obtained from GET /transaction
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TransactionDocuments'
+            encoding:
+              pdfClosingProtectionLetter:
+                contentType: image/pdf
+              pdfWireInstructions:
+                contentType: image/pdf
+              pdfErrorsAndOmissionsInsurance:
+                contentType: image/pdf
+              pdfCrimesPolicy:
+                contentType: image/pdf
+              pdfFidelityBond:
+                contentType: image/pdf
+              pdfBankReferenceLetter:
+                contentType: image/pdf   
+              pdfStateLicense:   
+                contentType: image/pdf   
+              pdfLenderTitleCommitment:
+                contentType: image/pdf         
+      responses:
+        '201':
+          description: Successful creation of a resource.                   
+  # /phasedTransaction:
+  #   get:
+  #     tags:
+  #       - guardian-external
+  #     summary: searches Phased Guardian Transactions
+  #     operationId: searchPhasedGuardianTransactions
+  #     description: |
+  #       By passing in the appropriate options, you can search for
+  #       available Guardian Transactions in the system
+  #     parameters:
+  #       - in: query
+  #         name: searchString
+  #         description: pass an optional search string for looking up Guardian Transactions
+  #         required: false
+  #         schema:
+  #           type: string
+  #       - in: query
+  #         name: skip
+  #         description: number of records to skip for pagination
+  #         schema:
+  #           type: integer
+  #           format: int32
+  #           minimum: 0
+  #       - in: query
+  #         name: limit
+  #         description: maximum number of records to return
+  #         schema:
+  #           type: integer
+  #           format: int32
+  #           minimum: 0
+  #           maximum: 50
+  #     responses:
+  #       '200':
+  #         description: No error, operation successful.
+  #         content:
+  #           application/json:
+  #             schema:
+  #               type: array
+  #               items:
+  #                 $ref: '#/components/schemas/GuardianResponsePhase1'
+  #       '400':
+  #         description: bad input parameter
+  #   post:
+  #     tags:
+  #       - guardian-external
+  #     summary: creates a new single Phased Guardian Transaction
+  #     operationId: createPhasedGuardianTransaction
+  #     description: creates a single Guardian Transaction
+  #     responses:
+  #       '201':
+  #         description: Successful creation of a resource.
+  #         content:
+  #           application/json:
+  #             schema:
+  #               type: array
+  #               items:
+  #                 $ref: '#/components/schemas/GuardianResponsePhase1'
+  #       '400':
+  #         description: bad input parameter
+  #     requestBody:
+  #       content:
+  #         application/json:
+  #           schema:
+  #             $ref: '#/components/schemas/GuardianTransactionPhase1'
+  #       description: Guardian Transaction to add
+  #   put:
+  #     tags:
+  #       - guardian-external
+  #     summary: increment phase of existing Phased Guardian Transaction
+  #     operationId: updatePhasedGuardianTransaction
+  #     description: updates a single Guardian Transaction
+  #     responses:
+  #       '201':
+  #         description: Successful creation of a resource.
+  #         content:
+  #           application/json:
+  #             schema:
+  #               type: array
+  #               items:
+  #                 $ref: '#/components/schemas/GuardianResponse'
+  #       '400':
+  #         description: bad input parameter
+  #     requestBody:
+  #       content:
+  #         application/json:
+  #           schema:
+  #             $ref: '#/components/schemas/GuardianTransaction'
+  #       description: Guardian Transaction to update
+servers:
+  - url: 'https://guardian-api.fundingshield.com/guardian'
+components:
+  securitySchemes:
+    apiKeyHeader:
+      description: |-
+        the subscription_key assocaited with your username.  Contact
+        ```
+        sales@fundingshield.com
+
+        ```
+        to get a subscription_key. 
+      type: apiKey
+      name: Ocp-Apim-Subscription-Key
+      in: header
+    apiKeyQuery:
+      description: |-
+        the subscription_key assocaited with your username.  Contact
+        ```
+        sales@fundingshield.com
+
+        ```
+        to get a subscription_key. 
+      type: apiKey
+      name: subscription-key
+      in: query
+  schemas:
+    # States:
+    #   type: string
+    #   example: NY
+      # enum: [AK, AL, AR, AS, AZ, CA, CO, CT, DC, DE, FL, GA, GU, HI, IA, ID, IL, IN, KS, KY, LA, MA, MD, ME, MI, MN, MO, MP, MS, MT, NC, ND, NE, NH, NJ, NM, NV, NY, OH, OK, OR, PA, PR, RI, SC, SD, TN, TX, UM, UT, VA, VI, VT, WA, WI, WV, WY]     
+    BorrowerInfo:
+      type: object
+      required:
+        - primaryBorrowerFirstName
+        - primaryBorrowerLastName
+      properties:
+        primaryBorrowerFirstName:
+          type: string
+          example: John
+        primaryBorrowerMiddleName:
+          type: string
+          example: Joe
+        primaryBorrowerLastName:
+          type: string
+          example: Smith
+        primaryBorrowerIsNonBorrowingParty:
+          type: boolean
+          default: false
+        secondaryBorrowerFirstName:
+          type: string
+          example: John
+        secondaryBorrowerMiddleName:
+          type: string
+          example: Joe
+        secondaryBorrowerLastName:
+          type: string
+          example: Smith
+        secondaryBorrowerIsNonBorrowingParty:
+          type: boolean
+          default: false          
+        tertiaryBorrowerFirstName:
+          type: string
+          example: John
+        tertiaryBorrowerMiddleName:
+          type: string
+          example: Joe
+        tertiaryBorrowerLastName:
+          type: string
+          example: Smith
+        tertiaryBorrowerIsNonBorrowingParty:
+          type: boolean
+          default: false                
+        quarternaryBorrowerFirstName:
+          type: string
+          example: John
+        quarternaryBorrowerMiddleName:
+          type: string
+          example: Joe
+        quarternaryBorrowerLastName:
+          type: string
+          example: Smith
+        quarternaryBorrowerIsNonBorrowingParty:
+          type: boolean
+          default: false             
+    PropertyInfo:
+      type: object
+      required:
+        - propertyAddress1
+        - propertyCity
+        - propertyState
+        - propertyZipCode        
+      properties:
+        propertyAddress1:
+          type: string
+          example: 123 Main St.
+        propertyAddress2:
+          type: string
+          example: Suite 1500
+        propertyCity:
+          type: string
+          example: New York
+        propertyState:
+          # $ref: '#/components/schemas/States'          
+          type: string
+          example: NY
+          pattern: '/^[a-z]{2}$/i'
+        propertyZipCode:
+          type: string
+          example: 10001 or 10001-0001
+          pattern: '^[0-9]{5}(?:-[0-9]{4})?$'
+    ClosingAgentInfo:
+      type: object
+      required:
+        - closingAgentName
+        - closingAgentAddress1
+        - closingAgentCity
+        - closingAgentState
+        - closingAgentZipCode
+      properties:
+        clientClosingAgentId:
+          type: integer
+        closingAgentName:
+          type: string
+          example: Title Agent of America
+        closingAgentAddress1:
+          type: string
+          example: 123 Main St.
+        closingAgentAddress2:
+          type: string
+          example: Suite 1500
+        closingAgentCity:
+          type: string
+          example: New York
+        closingAgentState:
+          # $ref: '#/components/schemas/States'          
+          type: string
+          example: NY
+          pattern: '/^[a-z]{2}$/i'
+        closingAgentZipCode:
+          type: string
+          example: 10001 or 10001-0001
+          pattern: '^[0-9]{5}(?:-[0-9]{4})?$'           
+        closingAgentEmail:
+          type: string
+          example: closings@example.com
+          format: email
+        closingAgentPhone:
+          type: string
+          example: 800-555-1234
+          pattern: '^\(?([0-9]{3})\)?[-.●]?([0-9]{3})[-.●]?([0-9]{4})$'
+        closingAgentContactFirstName:
+          type: string
+          example: John
+        closingAgentContactLastName:
+          type: string
+          example: Smith          
+    WireAccountInfo:
+      type: object
+      required:
+        - abaNumber
+        - acctNumber
+        - nameOnClosingAgentWireAccount
+      properties:
+        abaNumber:
+          description: Wire Account ABA/Routing Number
+          type: string
+          pattern: '^\d{9}$'
+          example: 012345678
+        acctNumber:
+          type: string
+          example: 12345
+        nameOnClosingAgentWireAccount:
+          type: string
+          example: Title Agent of America Escrow Account
+        intermediateBankName:
+          type: string
+          example: First Bank of Oklahoma
+        intermediateBankAccountNumber:
+          type: string
+          example: 12345          
+        bankName:
+          type: string
+          example: Chase
+        bankAddress1:
+          type: string
+        bankAddress2:
+          type: string
+        bankCity:
+          type: string
+        bankState: 
+          # $ref: '#/components/schemas/States'          
+          type: string
+          example: NY
+          pattern: '/^[a-z]{2}$/i' 
+        bankZipCode:
+          type: string
+          example: 10001 or 10001-0001
+          pattern: '^[0-9]{5}(?:-[0-9]{4})?$' 
+        bankPhone:
+          type: string
+          example: 800-555-1234
+          pattern: '^\(?([0-9]{3})\)?[-.●]?([0-9]{3})[-.●]?([0-9]{4})$'
+    UnderwriterInfo:
+      type: object
+      properties:
+        titleInsuranceUnderwriterName:
+          type: string
+          example: ABC Underwriter
+    LoanInfo:
+      type: object
+      required:
+        - clientUniqueId
+        - loanAmount
+      properties:
+        clientUniqueId:
+          type: string
+          example: 18-123456789
+        clientUniqueId2:
+          type: string
+          example: 18-123456789
+        loanAmount:
+          type: string
+          example: 453100
+        closingDate:
+          type: string
+          example: 2017-07-21T17:32:28Z
+          format: date-time
+        secondMortgage:
+          type: string
+          example: true
+        secondMortgageInsured:
+          type: string
+          example: true
+        secondMortgageClientUniqueID:
+          type: string
+          example: 18-123456789
+        secondMortgageLoanAmount:
+          type: string
+          example: 453100
+        titleNumber:
+          type: string
+          example: 123456
+        escrowNumber:
+          type: string
+          example: 123456
+        rushOrder:
+          type: boolean
+          example: true
+          default: false
+    LenderInfo: 
+      required:
+        - lenderLegalName
+        - lenderUserEmail
+      properties:
+        lenderLegalName:
+          type: string   
+        lenderUserFirstName:
+          type: string
+        lenderUserLastName:
+          type: string
+        lenderUserPhone:
+          type: string
+          example: 800-555-1234
+          pattern: '^\(?([0-9]{3})\)?[-.●]?([0-9]{3})[-.●]?([0-9]{4})$'          
+        lenderUserEmail:
+          type: string
+          format: email          
+    BorrowerInfoPatch:
+      type: object
+      properties:
+        primaryBorrowerFirstName:
+          type: string
+          example: John
+        primaryBorrowerMiddleName:
+          type: string
+          example: Joe
+        primaryBorrowerLastName:
+          type: string
+          example: Smith
+        primaryBorrowerIsNonBorrowingParty:
+          type: boolean
+          default: false
+        secondaryBorrowerFirstName:
+          type: string
+          example: John
+        secondaryBorrowerMiddleName:
+          type: string
+          example: Joe
+        secondaryBorrowerLastName:
+          type: string
+          example: Smith
+        secondaryBorrowerIsNonBorrowingParty:
+          type: boolean
+          default: false          
+        tertiaryBorrowerFirstName:
+          type: string
+          example: John
+        tertiaryBorrowerMiddleName:
+          type: string
+          example: Joe
+        tertiaryBorrowerLastName:
+          type: string
+          example: Smith
+        tertiaryBorrowerIsNonBorrowingParty:
+          type: boolean
+          default: false                
+        quarternaryBorrowerFirstName:
+          type: string
+          example: John
+        quarternaryBorrowerMiddleName:
+          type: string
+          example: Joe
+        quarternaryBorrowerLastName:
+          type: string
+          example: Smith
+        quarternaryBorrowerIsNonBorrowingParty:
+          type: boolean
+          default: false             
+    PropertyInfoPatch:
+      type: object
+      properties:
+        propertyAddress1:
+          type: string
+          example: 123 Main St.
+        propertyAddress2:
+          type: string
+          example: Suite 1500
+        propertyCity:
+          type: string
+          example: New York
+        propertyState:
+          # $ref: '#/components/schemas/States'          
+          type: string
+          example: NY
+          pattern: '/^[a-z]{2}$/i'
+        propertyZipCode:
+          type: string
+          example: 10001 or 10001-0001
+          pattern: '^[0-9]{5}(?:-[0-9]{4})?$'
+    ClosingAgentInfoPatch:
+      type: object
+      properties:
+        clientClosingAgentId:
+          type: string
+        closingAgentName:
+          type: string
+          example: Title Agent of America
+        closingAgentAddress1:
+          type: string
+          example: 123 Main St.
+        closingAgentAddress2:
+          type: string
+          example: Suite 1500
+        closingAgentCity:
+          type: string
+          example: New York
+        closingAgentState:
+          # $ref: '#/components/schemas/States'          
+          type: string
+          example: NY
+          pattern: '/^[a-z]{2}$/i'
+        closingAgentZipCode:
+          type: string
+          example: 10001 or 10001-0001
+          pattern: '^[0-9]{5}(?:-[0-9]{4})?$'           
+        closingAgentEmail:
+          type: string
+          example: closings@example.com
+          format: email
+        closingAgentPhone:
+          type: string
+          example: 800-555-1234
+          pattern: '^\(?([0-9]{3})\)?[-.●]?([0-9]{3})[-.●]?([0-9]{4})$'
+        closingAgentContactFirstName:
+          type: string
+          example: John
+        closingAgentContactLastName:
+          type: string
+          example: Smith          
+    WireAccountInfoPatch:
+      type: object
+      properties:
+        abaNumber:
+          description: Wire Account ABA/Routing Number
+          type: string
+          pattern: '^\d{9}$'
+          example: 012345678
+        acctNumber:
+          type: string
+          example: 12345
+        nameOnClosingAgentWireAccount:
+          type: string
+          example: Title Agent of America Escrow Account
+        intermediateBankName:
+          type: string
+          example: First Bank of Oklahoma
+        intermediateBankAccountNumber:
+          type: string
+          example: 12345          
+        bankName:
+          type: string
+          example: Chase
+        bankAddress1:
+          type: string
+        bankAddress2:
+          type: string
+        bankCity:
+          type: string
+        bankState: 
+          # $ref: '#/components/schemas/States'          
+          type: string
+          example: NY
+          pattern: '/^[a-z]{2}$/i' 
+        bankZipCode:
+          type: string
+          example: 10001 or 10001-0001
+          pattern: '^[0-9]{5}(?:-[0-9]{4})?$' 
+        bankPhone:
+          type: string
+          example: 800-555-1234
+          pattern: '^\(?([0-9]{3})\)?[-.●]?([0-9]{3})[-.●]?([0-9]{4})$'
+    UnderwriterInfoPatch:
+      type: object
+      properties:
+        titleInsuranceUnderwriterName:
+          type: string
+          example: ABC Underwriter
+    LoanInfoPatch:
+      type: object
+      properties:
+        clientUniqueId:
+          type: string
+          example: 18-123456789
+        clientUniqueId2:
+          type: string
+          example: 18-123456789
+        loanAmount:
+          type: string
+          example: 453100
+        closingDate:
+          type: string
+          example: 2017-07-21T17:32:28Z
+          format: date-time
+        secondMortgage:
+          type: string
+          example: true
+        secondMortgageInsured:
+          type: string
+          example: true
+        secondMortgageClientUniqueID:
+          type: string
+          example: 18-123456789
+        secondMortgageLoanAmount:
+          type: string
+          example: 453100
+        titleNumber:
+          type: string
+          example: 123456
+        escrowNumber:
+          type: string
+          example: 123456      
+    LenderInfoPatch: 
+      properties:
+        lenderLegalName:
+          type: string   
+        lenderUserFirstName:
+          type: string
+        lenderUserLastName:
+          type: string
+        lenderUserPhone:
+          type: string
+          example: 800-555-1234
+          pattern: '^\(?([0-9]{3})\)?[-.●]?([0-9]{3})[-.●]?([0-9]{4})$'          
+        lenderUserEmail:
+          type: string
+          format: email          
+    GuardianTransactionInfo:
+      type: object
+      properties:
+        # transactionPhase:
+        #   type: string
+        #   enum:
+        #     - L1
+        #     - L2
+        #     - L3
+        transactionStatus:
+          type: string
+          enum: [Issues Reported, Approved, Approved / Archived, Rejected / Archived, In Process]
+        transactionId:
+          type: integer
+          example: 100000
+        requestDate:
+          type: string
+          description: Guardian Request Date      
+          example: 2017-07-21T17:32:28Z
+          format: date-time
+        transactionFinalized:
+          type: boolean
+          example: false
+        transactionDocsAvailable:
+          type: boolean
+          example: false
+        newTransactionDocsAvailable:
+          type: boolean
+          example: false          
+    GuardianTransaction:
+      allOf:
+        - $ref: '#/components/schemas/LenderInfo'      
+        - $ref: '#/components/schemas/BorrowerInfo'
+        - $ref: '#/components/schemas/PropertyInfo'
+        - $ref: '#/components/schemas/ClosingAgentInfo'
+        - $ref: '#/components/schemas/WireAccountInfo'
+        - $ref: '#/components/schemas/UnderwriterInfo'
+        - $ref: '#/components/schemas/LoanInfo'
+        - $ref: '#/components/schemas/TransactionDocuments'
+    GuardianTransactionPatch:
+      description: A JSON Merge Patch document as defined by RFC 7396 
+      allOf:
+        - $ref: '#/components/schemas/LenderInfoPatch'      
+        - $ref: '#/components/schemas/BorrowerInfoPatch'
+        - $ref: '#/components/schemas/PropertyInfoPatch'
+        - $ref: '#/components/schemas/ClosingAgentInfoPatch'
+        - $ref: '#/components/schemas/WireAccountInfoPatch'
+        - $ref: '#/components/schemas/UnderwriterInfoPatch'
+        - $ref: '#/components/schemas/LoanInfoPatch'
+        #- $ref: '#/components/schemas/TransactionDocuments'
+    # GuardianTransactionPhase1:
+    #   allOf:
+    #     - $ref: '#/components/schemas/BorrowerInfo'
+    #     - $ref: '#/components/schemas/PropertyInfo'
+    #     - $ref: '#/components/schemas/ClosingAgentInfo'
+    #     - $ref: '#/components/schemas/LoanInfo'
+    # GuardianResponseBase:
+    #   allOf:
+    #     - properties:
+    #         stateLicensing:
+    #           type: boolean
+    #         corpStatus:
+    #           type: boolean
+    #         uplEnforcement:
+    #           type: boolean
+    # GuardianResponsePhase1:
+    #   allOf:
+    #     - $ref: '#/components/schemas/GuardianTransactionPhase1'
+    #     - $ref: '#/components/schemas/GuardianResponseBase'
+    #     - properties:
+    #         potentialWireAccounts:
+    #           type: array
+    #           items:
+    #             $ref: '#/components/schemas/PotentialWireAccounts'
+    # GuardianResponseAdmin:
+    #   allOf:
+        # - $ref: '#/components/schemas/GuardianResponse'     
+        # - $ref: '#/components/schemas/GuardianResponseBase'
+        # - properties:
+    #         internalNotes:
+    #           type: string
+    #           example: Rejected          
+        #     titleInsuranceUnderwriter:
+        #       type: boolean
+        #     ClosingProtectionLetterStatus:
+        #       type: string
+        #       enum:
+        #         - Requested
+        #         - Received
+        #         - Rejected
+        #         - Approved
+        #     WireInstructionsStatus:
+        #       type: string
+        #       enum:
+        #         - Requested
+        #         - Received
+        #         - Rejected
+        #         - Approved
+        #     ErrorsAndOmissionsInsuranceStatus:
+        #       type: string
+        #       enum:
+        #         - Requested
+        #         - Received
+        #         - Rejected
+        #         - Approved
+        #     CrimesPolicyCoverageStatus:
+        #       type: string
+        #       enum:
+        #         - Requested
+        #         - Received
+        #         - Rejected
+        #         - Approved
+        #     FidelityBondStatus:
+        #       type: string
+        #       enum:
+        #         - Requested
+        #         - Received
+        #         - Rejected
+        #         - Approved                
+        #     StateLicenseStatus:
+        #       type: string
+        #       enum:
+        #         - Requested
+        #         - Received
+        #         - Rejected
+        #         - Approved       
+        #     BankReferenceLetterStatus:
+        #       type: string
+        #       enum:
+        #         - Requested
+        #         - Received
+        #         - Rejected
+        #         - Approved                    
+    GuardianResponse:
+      allOf:
+        - $ref: '#/components/schemas/GuardianTransactionInfo'
+        - $ref: '#/components/schemas/LenderInfo'      
+        - $ref: '#/components/schemas/BorrowerInfo'
+        - $ref: '#/components/schemas/PropertyInfo'
+        - $ref: '#/components/schemas/ClosingAgentInfo'
+        - $ref: '#/components/schemas/WireAccountInfo'
+        - $ref: '#/components/schemas/UnderwriterInfo'
+        - $ref: '#/components/schemas/LoanInfo'
+        # - $ref: '#/components/schemas/TransactionResponseOnlyDocuments'
+    GuardianCertificateRequest:
+      type: object
+      required:
+        - clientId
+        - clientUniqueId
+        - acctNumberLastFive
+        - abaNumber
+      properties:
+        clientId:
+          description: Unique Identifier for Client of Guaridan Client
+          type: string
+        clientUniqueId:
+          description: Guardian Client Unique Identifier typically Loan Number
+          type: string
+        acctNumberLastFive:
+          description: Last 5 digits of the Wire Account Number
+          type: string
+        abaNumber:
+          description: Wire Account ABA/Routing Number
+          type: string
+          pattern: '^\d{9}$'
+          example: 012345678
+        #closingAgentName:
+        #  description: name of the Closing Agent
+        #  type: string
+    GuardianCertificateResponse:
+      allOf:
+        - $ref: '#/components/schemas/GuardianCertificateRequest' # GuardianResponse has all properties of a GuardianCertificateRequest
+        - properties:
+            certificateId:
+              type: string
+              format: uuid
+              example: d290f1ee-6c54-4b01-90e6-d701748f0851           
+            nameOnClosingAgentWireAccount:
+              type: string
+              example: Title Agent of America Escrow Account
+              description: Account Name on the Closing Agent Wire Account
+            intermediateBankName:
+              type: string
+              example: First Bank of Oklahoma
+              description: Closing Agent Intermediate Wire Account Bank Name
+            intermediateBankAccountNumber:
+              type: string
+              example: "12345"
+              description: Closing Agent Intermediate Wire Account Number
+            result:
+              type: string
+              enum: [Data not found, Data not matching, Data matching]
+    # PotentialWireAccounts:
+    #   type: object
+    #   required:
+    #     - abaNumber
+    #     - acctNumber
+    #   properties:
+    #     abaNumber:
+    #       type: string
+    #       example: 123456789
+    #     acctNumber:
+    #       type: string
+    #       example: 12345
+    TransactionDocuments:
+      type: object
+      properties:
+        pdfClosingProtectionLetter:
+          type: string
+          format: binary
+        pdfWireInstructions:
+          type: string
+          format: binary
+        pdfErrorsAndOmissionsInsurance:
+          type: string
+          format: binary
+        pdfCrimesPolicy:
+          type: string
+          format: binary
+        pdfFidelityBond:
+          type: string
+          format: binary
+        pdfStateLicense:
+          type: string
+          format: binary
+        pdfBankReferenceLetter:
+          type: string
+          format: binary
+        pdfLenderTitleCommitment:
+          type: string
+          format: binary            
+    # TransactionResponseOnlyDocuments:
+    #   type: object
+    #   properties:
+    #     pdfClosingProtectionLetterValidation:
+    #       type: string
+    #       format: binary
+    #     pdfGuardianCertificate:
+    #       type: string
+    #       format: binary
+    }
